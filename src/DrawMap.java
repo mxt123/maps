@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,38 +19,55 @@ import javax.swing.JTextArea;
 public class DrawMap extends JPanel  implements KeyListener{
 		static JTextArea displayArea;
 		static JFrame f;
-		static int fontSize = 40;
+		static int fontSize = 50;
 		int mapHeight;
 		int mapWidth;
-		static int spacing = fontSize;
         //Location of your map, you'll need other methods to change this value to move your map around on the screen. But this will start your generation at 0,0 NOTE: Since you are dealing with ASCII you will probably be fine just using ints instead of floats.
-         float mapX = 0;
-         float mapY = 0 + spacing;
-        static int displayWidth =640; //Screen size width.
-        static int displayHeight = 480; //Screen size height.
+         float mapX;
+         float mapY;
+         int displayWidth =640; //Screen size width.
+        int displayHeight = 480; //Screen size height.
         private byte[][] yourMap = new byte[mapHeight][mapWidth]; //Create byte array matching map height/width. (May need to be an int[][] or whatever[][] depending on what you're doing)
-
+        
+        private int getRandom(int min, int max) {
+        	return min + (int)(Math.random() * ((max - min) + 1));	
+        }
+        
+        private int getSpacing(){
+        	return  fontSize;
+        }
+        
+        
         private double getMapWidth() {
-        	return (double) (displayWidth / spacing);
+        	return (double) (displayWidth / getSpacing());
         }
         
         private double getMapHeight() {
-        	return (double) (displayHeight / spacing);
+        	return (double) (displayHeight / getSpacing());
         }
         
         public DrawMap(final String fileName) throws IOException{
         	mapHeight = Read2D.countLines(fileName) +1;
         	this.yourMap = Read2D.read2dArray(fileName,mapHeight);
         	mapWidth = this.yourMap[0].length;
+        	mapY = 0 + getSpacing();
+        	mapX = 0;
         }
        
         public void paint(Graphics g) {
+        	
+            int displayWidth = f.getWidth();
+            int displayHeight = f.getHeight();
+        	
+        	
                 Graphics2D g2 = (Graphics2D)g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                 RenderingHints.VALUE_ANTIALIAS_ON);
-                Font font = new Font(Font.MONOSPACED,Font.PLAIN, fontSize);
-                g2.setFont(font);
-                g2.setColor(Color.red);
+               // Font font = new Font(Font.MONOSPACED,Font.PLAIN, fontSize);
+                Font font = new Font(Font.MONOSPACED,Font.PLAIN,fontSize);
+                //Font font = Font.createFont(Font.PLAIN, fontFile)
+                g2.setFont(font);            
+                final int spacing = getSpacing();
 
                 //  g2.scale(420, 320);
                 //Start looping through the entire byte array.
@@ -57,12 +75,14 @@ public class DrawMap extends JPanel  implements KeyListener{
                         for (int y = 0; y < mapHeight; y++) {
                         	  System.out.println(x + "," + y + "," + (char)yourMap[y][x]);
                                 // Check to see if the coordinates being looked for are visible on the screen. If not, don't bother rendering them.
-                                if ((x*spacing+mapX > -10) && (x*spacing+mapX < displayWidth+10) && (y*spacing+mapY > -10) && (y*spacing+mapY < displayHeight+10)){
+                                if ((x*spacing+mapX > -10) && (x*spacing+mapX < displayWidth+10) && (y*getSpacing()+mapY > -10) && (y*spacing+mapY < displayHeight+10)){
                                        // if (!(yourMap[x][y] == 0)){ //Assuming 0 is a "blank space", but whatever == Blank space here, so you're not trying to output nothing.
                                                 //However you output the text would go here. For example, if you were using the Font class in slick2d:
                                               
                                         	
                                         		final char ch = (char)yourMap[y][x];
+                                        		final int col = getRandom(1,3);   
+                                        		g2.setColor(col ==1 ? Color.red : Color.green);
                                                 g2.drawString(String.valueOf(ch), (x*spacing)+mapX, (y*spacing)+mapY); 
                                                 //So basically, however you call it, the coords would be (x*spacing)+mapX, (y*spacing)+mapY and you'll be calling character yourMap[x][y]. 
                                      //   }
@@ -71,7 +91,6 @@ public class DrawMap extends JPanel  implements KeyListener{
                 }
         }
 
-        //YOUR CODE TO FILL SAID BYTE/INT/CHAR/WHATEVER ARRAY WITH YOUR "ASCII MAP"!//
 
         public static void main(String[] args) throws IOException {
                 f = new JFrame("xzz");
@@ -97,10 +116,9 @@ public class DrawMap extends JPanel  implements KeyListener{
 
 		@Override
 		public void keyPressed(KeyEvent key) {	
+			int spacing = getSpacing();
 			if (key.getKeyCode() == KeyEvent.VK_RIGHT) {
-				if ( Math.abs(this.getMapWidth()) > Math.abs(mapX/spacing)) {
 					mapX -= spacing;
-				}
 			}
 			if (key.getKeyCode() == KeyEvent.VK_LEFT) {
 				if (Math.round(mapX) <=-spacing ) {
@@ -116,12 +134,14 @@ public class DrawMap extends JPanel  implements KeyListener{
 				}
 			}
 			if (key.getKeyCode() == KeyEvent.VK_1) {
-				fontSize += 10;
-				spacing +=10;
+				fontSize += 10;	
+				mapX = 0;
+				mapY=0;
 			}
 			if (key.getKeyCode() == KeyEvent.VK_2) {
 				fontSize -= 10;
-				spacing -=10;
+				mapX = 0;
+				mapY=0;
 			}
 			f.repaint();
 			displayArea.setText("width:" + this.getMapWidth() + "-X:" +String.valueOf(mapX/spacing) + "-Y:" + String.valueOf(mapY/spacing));
