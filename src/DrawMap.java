@@ -29,6 +29,14 @@ public class DrawMap extends JPanel  implements KeyListener{
         static int displayHeight = 480; //Screen size height.
         private byte[][] yourMap = new byte[mapHeight][mapWidth]; //Create byte array matching map height/width. (May need to be an int[][] or whatever[][] depending on what you're doing)
 
+        private double getMapWidth() {
+        	return (double) (displayWidth / spacing);
+        }
+        
+        private double getMapHeight() {
+        	return (double) (displayHeight / spacing);
+        }
+        
         public DrawMap(final String fileName) throws IOException{
         	mapHeight = Read2D.countLines(fileName) +1;
         	this.yourMap = Read2D.read2dArray(fileName,mapHeight);
@@ -89,40 +97,34 @@ public class DrawMap extends JPanel  implements KeyListener{
 
 		@Override
 		public void keyPressed(KeyEvent key) {	
-//			System.out.print(String.valueOf(arg0.getKeyChar()));
-			System.out.print(String.valueOf(key.getKeyChar()));
 			if (key.getKeyCode() == KeyEvent.VK_RIGHT) {
-				mapX -= spacing;
-				displayArea.setText(String.valueOf(mapX));
-				f.repaint();
+				if ( Math.abs(this.getMapWidth()) > Math.abs(mapX/spacing)) {
+					mapX -= spacing;
+				}
 			}
 			if (key.getKeyCode() == KeyEvent.VK_LEFT) {
-				mapX += spacing;
-				displayArea.setText(String.valueOf(mapX));
-				f.repaint();
+				if (Math.round(mapX) <=-spacing ) {
+					mapX += spacing;
+				}
 			}
 			if (key.getKeyCode() == KeyEvent.VK_DOWN) {
 				mapY -= spacing;
-				displayArea.setText(String.valueOf(mapX));
-				f.repaint();
 			}
 			if (key.getKeyCode() == KeyEvent.VK_UP) {
-				mapY += spacing;
-				displayArea.setText(String.valueOf(mapX));
-				f.repaint();
+				if (Math.round(mapY) <=0 ) {
+					mapY += spacing;
+				}
 			}
 			if (key.getKeyCode() == KeyEvent.VK_1) {
 				fontSize += 10;
 				spacing +=10;
-				displayArea.setText(String.valueOf(mapX));
-				f.repaint();
 			}
 			if (key.getKeyCode() == KeyEvent.VK_2) {
 				fontSize -= 10;
 				spacing -=10;
-				displayArea.setText(String.valueOf(mapX));
-				f.repaint();
 			}
+			f.repaint();
+			displayArea.setText("width:" + this.getMapWidth() + "-X:" +String.valueOf(mapX/spacing) + "-Y:" + String.valueOf(mapY/spacing));
 		}
 
 		@Override
