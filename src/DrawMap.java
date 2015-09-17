@@ -8,7 +8,6 @@ import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -35,15 +34,6 @@ public class DrawMap extends JPanel  implements KeyListener{
         
         private int getSpacing(){
         	return  fontSize;
-        }
-        
-        
-        private double getMapWidth() {
-        	return (double) (displayWidth / getSpacing());
-        }
-        
-        private double getMapHeight() {
-        	return (double) (displayHeight / getSpacing());
         }
         
         public DrawMap(final String fileName) throws IOException{
@@ -144,7 +134,7 @@ public class DrawMap extends JPanel  implements KeyListener{
 				mapY=0;
 			}
 			f.repaint();
-			displayArea.setText("width:" + this.getMapWidth() + "-X:" +String.valueOf(mapX/spacing) + "-Y:" + String.valueOf(mapY/spacing));
+			displayArea.setText("X:" +String.valueOf(mapX/spacing) + "-Y:" + String.valueOf(mapY/spacing));
 		}
 
 		@Override
