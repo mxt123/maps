@@ -35,8 +35,16 @@ public class DrawMap extends JPanel  implements KeyListener{
         private byte[][] yourMap = new byte[mapHeight][mapWidth]; //Create byte array matching map height/width. (May need to be an int[][] or whatever[][] depending on what you're doing)
         private List<Message> messages = new ArrayList<Message>();
         
+        static Color LAND_COL = Color.GREEN;
+        static Color SEA_COL = Color.BLUE;
         
-        private int getRandom(int min, int max) {
+        static Color WALL_COL = Color.GRAY;
+        static Color ROOM_COL = Color.ORANGE;
+        
+        Color color1 = LAND_COL;
+        Color color2 = SEA_COL;
+        
+		private int getRandom(int min, int max) {
         	return min + (int)(Math.random() * ((max - min) + 1));	
         }
         
@@ -65,7 +73,6 @@ public class DrawMap extends JPanel  implements KeyListener{
             int displayWidth = f.getWidth();
             int displayHeight = f.getHeight();
         	
-        	
                 Graphics2D g2 = (Graphics2D)g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -75,25 +82,17 @@ public class DrawMap extends JPanel  implements KeyListener{
                 g2.setFont(font);            
                 final int spacing = getSpacing();
 
-                //  g2.scale(420, 320);
                 //Start looping through the entire byte array.
                 for (int x = 0; x < mapWidth; x++) {
                         for (int y = 0; y < mapHeight; y++) {
                         	//  System.out.println(x + "," + y + "," + (char)yourMap[y][x]);
                                 // Check to see if the coordinates being looked for are visible on the screen. If not, don't bother rendering them.
                                 if ((x*spacing+mapX > -10) && (x*spacing+mapX < displayWidth+10) && (y*getSpacing()+mapY > -10) && (y*spacing+mapY < displayHeight+10)){
-                                       // if (!(yourMap[x][y] == 0)){ //Assuming 0 is a "blank space", but whatever == Blank space here, so you're not trying to output nothing.
-                                                //However you output the text would go here. For example, if you were using the Font class in slick2d:
-                                              
-                                        	
-                                        		final char ch = (char)yourMap[y][x];
-                                        		//final int col = getRandom(1,3);   
-                                        		//g2.setColor(col ==1 ? Color.red : Color.green);
-                                        	//	g2.setColor(ch == MapGenCaves.TREE?Color.GREEN :Color.gray);
-                                        		g2.setColor(ch == MapGenCaves.WALL?Color.BLUE :Color.GREEN);
-                                        		g2.drawString(String.valueOf(ch), (x*spacing)+mapX, (y*spacing)+mapY); 
-                                                //So basically, however you call it, the coords would be (x*spacing)+mapX, (y*spacing)+mapY and you'll be calling character yourMap[x][y]. 
-                                     //   }
+                                   // if (!(yourMap[x][y] == 0)){ //Assuming 0 is a "blank space", but whatever == Blank space here, so you're not trying to output nothing.
+                                    //However you output the text would go here. For example, if you were using the Font class in slick2d:
+                            		final char ch = (char)yourMap[y][x];                               
+                            		g2.setColor(ch == MapGenCaves.WALL?color2 :color1);
+                            		g2.drawString(String.valueOf(ch), (x*spacing)+mapX, (y*spacing)+mapY); 
                                      
                                 }
                         }
@@ -118,6 +117,7 @@ public class DrawMap extends JPanel  implements KeyListener{
                // DrawMap map = new DrawMap("/home/matt/workspace/drawstring/src/map.txt");
                 // TODO change recursive graph functions to avoid stackoverflows :)
                 DrawMap map = new DrawMap(50,50);
+                map.init();
                 f.getContentPane().add(map);
                 
                 displayArea = new JTextArea();
@@ -128,7 +128,7 @@ public class DrawMap extends JPanel  implements KeyListener{
                 displayArea.setFont(new Font(Font.MONOSPACED,Font.PLAIN, 20));
                 displayArea.setText("hello");
                 
-                map.yourMap = MapGenCaves.generateGrid(map.yourMap);
+                //map.yourMap = MapGenCaves.generateGrid(map.yourMap);
                 
                 f.setSize(1024, 768);
                 f.setPreferredSize(new Dimension(1024, 768));                           
@@ -169,23 +169,47 @@ public class DrawMap extends JPanel  implements KeyListener{
 				this.yourMap = MapGenCaves.evolveGrid(this.yourMap);
 	        }
 			if (key.getKeyCode() == KeyEvent.VK_3) {
+				messages = new ArrayList<Message>();
+				color1 = LAND_COL;
+				color2 = SEA_COL;
 				this.yourMap = MapGenCaves.generateGrid(this.yourMap);
 	        }
 			if (key.getKeyCode() == KeyEvent.VK_4) {
-				List<Point> islands = ConnectedIslands.countIslands(yourMap);
-				System.out.println("Number of islands is: " + islands.size());
-				this.messages = new ArrayList<Message>();
-				for (Point p: islands) {
-					messages.add(new Message(p, "Island"));
-				}
+				setIslandLabels();
 	        }
 			if (key.getKeyCode() == KeyEvent.VK_5) {
+				messages = new ArrayList<Message>();
+				color1 = ROOM_COL;
+				color2 = WALL_COL;
 				this.yourMap = MapGenDungeon.newFullMap(this.yourMap);
+	        }
+			if (key.getKeyCode() == KeyEvent.VK_6) {
+				init();
 	        }
 			
 			f.repaint();
 			displayArea.setText("X:" +String.valueOf(mapX/spacing) + "-Y:" + String.valueOf(mapY/spacing));
 			
+		}
+
+		private void init() {
+			messages = new ArrayList<Message>();
+			color1 = LAND_COL;
+			color2 = SEA_COL;
+			this.yourMap = MapGenCaves.generateGrid(this.yourMap);
+			for (int i = 0 ; i < 3; i++) {
+				this.yourMap = MapGenCaves.evolveGrid(this.yourMap);
+			}
+			setIslandLabels();
+		}
+
+		private void setIslandLabels() {
+			List<Point> islands = ConnectedIslands.countIslands(yourMap);
+			System.out.println("Number of islands is: " + islands.size());
+			this.messages = new ArrayList<Message>();
+			for (Point p: islands) {
+				messages.add(new Message(p, "Island"));
+			}
 		}
 
 		@Override
