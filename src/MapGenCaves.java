@@ -4,7 +4,7 @@ public class MapGenCaves {
 	static char TREE = 'T';
 	static char WALL = '#';
 	static char SPACE = '_';
-	static double CHANCETOSTARTALIVE = 0.45;
+	static double CHANCETOSTARTALIVE = 0.43 ;//0.45;
 	static double CHANCETREE = 0.3;
 	
 	public static int countAliveNeighbours(byte[][] grid,int x, int y)
@@ -32,13 +32,12 @@ public class MapGenCaves {
 		  for (int y = 0; y < grid.length ; y++) {
 		    for (int x = 0; x < grid[0].length ; x++) {    
 		      int count = countAliveNeighbours(grid,x,y);
-		     // if (!((char)grid[y][x]== TREE) ) {
 			      boolean isAlive = ((char)grid[y][x]) == WALL;
 			      if (isAlive) {
 			        if ( count < 3) {
 			          newgrid[y][x] = (byte) SPACE;
 			        } 
-			        else {
+			        else {	
 			          newgrid[y][x] = (byte) WALL;
 			        } 
 			      }

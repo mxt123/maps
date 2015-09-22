@@ -16,6 +16,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import util.Message;
+import util.Point;
+
+import dungeon.MapGenDungeon;
+
 public class DrawMap extends JPanel  implements KeyListener{
 		static JTextArea displayArea;
 		static JFrame f;
@@ -112,7 +117,7 @@ public class DrawMap extends JPanel  implements KeyListener{
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                // DrawMap map = new DrawMap("/home/matt/workspace/drawstring/src/map.txt");
                 // TODO change recursive graph functions to avoid stackoverflows :)
-                DrawMap map = new DrawMap(100,100);
+                DrawMap map = new DrawMap(50,100);
                 f.getContentPane().add(map);
                 
                 displayArea = new JTextArea();
@@ -173,6 +178,9 @@ public class DrawMap extends JPanel  implements KeyListener{
 				for (Point p: islands) {
 					messages.add(new Message(p, "Island"));
 				}
+	        }
+			if (key.getKeyCode() == KeyEvent.VK_5) {
+				this.yourMap = MapGenDungeon.newFullMap(this.yourMap);
 	        }
 			
 			f.repaint();

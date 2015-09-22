@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import util.Point;
+
 // lifted from c version of this algorithm  on connected graph theory
 // http://www.geeksforgeeks.org/find-number-of-islands/
 public class ConnectedIslands {
