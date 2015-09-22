@@ -1,6 +1,7 @@
 package dungeon;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import util.Point;
@@ -12,7 +13,7 @@ public class MapGenDungeon {
 	static char SPACE = '_';
 	static int ROOM_MAX_SIZE = 10;
 	static int ROOM_MIN_SIZE = 6;
-	static int MAX_ROOMS = 100;
+	static int MAX_ROOMS = 30;
 	
     private static int getRandom(int min, int max) {
     	return min + (int)(Math.random() * ((max - min) + 1));	
@@ -28,21 +29,21 @@ public class MapGenDungeon {
 	
 	public static void createHTunnel(byte[][] map, int x1, int x2, int y)
 	{
-		for (int x = x1; x < x2; x++){
+		for (int x = Math.min(x1,x2); x < Math.max(x1, x2); x++){
 			 map[y][x] = (byte) SPACE;
 		}
 	}
 	
 	public static void createVTunnel(byte[][] map, int y1, int y2, int x)
 	{
-		for (int y = y1; y < y2; y++){
+		for (int y = Math.min(y1,y2); y < Math.max(y1,y2); y++){
 			 map[y][x] = (byte) SPACE;
 		}
 	}
 	
 	public static Point center(Rect rect) {
-		int centerX = (rect.x + rect.x + rect.w) /2;
-		int centerY = (rect.y + rect.y + rect.h) /2;
+		int centerX = (rect.x + rect.x + rect.w-1) /2;
+		int centerY = (rect.y + rect.y + rect.h-1) /2;
 		return new Point(centerX,centerY);
 	}
 	
@@ -62,57 +63,58 @@ public class MapGenDungeon {
 	
 		List<Rect> rooms = new ArrayList<Rect>();
 		
-		for (int r= 0; r< MAX_ROOMS;r++){
+		for (int r = 0; r< MAX_ROOMS;r++){
 			int w = getRandom(ROOM_MIN_SIZE,ROOM_MAX_SIZE);
 			int h = getRandom(ROOM_MIN_SIZE,ROOM_MAX_SIZE);
-			int x = getRandom(0, map[0].length - w);
-			int y = getRandom(0, map.length - h);
+			int x = getRandom(1, map[0].length - w);
+			int y = getRandom(1, map.length - h);
 			Rect room = new Rect(x,y,w,h);
 			boolean fail = false;
-			for (Rect test : rooms) {
-				if (intersect(room,test)) {
+			
+			Iterator<Rect> it = rooms.iterator();
+			while (it.hasNext() && !fail){
+				if (intersect(room,(Rect) it.next())) {
 					fail = true;
 					break;
 				}
 			}
+			
 			if (!fail) {
 				rooms.add(room);
+				createRoom(map,room);
 			}
 		}
 		
-		//Point start = center(rooms.get(0));
-
-		for (int numRooms = 0; numRooms < rooms.size();numRooms++){
-			Point center = center(rooms.get(numRooms));
-			if (numRooms == 0) {
-				map[center.y][center.x] = (byte) '@';
+		int roomNum = 0;
+		for (Rect r : rooms){
+			Point center = center(r);
+			if (roomNum == 0) {
+				//nothing for now
 			} else {
-		        //all rooms after the first:
-		        //connect it to the previous room with a tunnel
-				Point centerPrevious = center(rooms.get(numRooms-1));
+				Point centerPrevious = center(rooms.get(roomNum-1));
 				if (getRandom(1, 2) < 2) {
-					//first move horizontally, then vertically
 					createHTunnel(map, centerPrevious.x, center.x, centerPrevious.y);
 					createVTunnel(map, centerPrevious.y, center.y, center.x);
 				} else {
-					//first move vertically then horizontally, 
 					createVTunnel(map, centerPrevious.y, center.y, centerPrevious.x);
 					createHTunnel(map, centerPrevious.x, center.x, center.y);
 				}
-				
-				/*
-				if libtcod.random_get_int(0, 0, 1) == 1:
-                    #first move horizontally, then vertically
-                    create_h_tunnel(prev_x, new_x, prev_y)
-                    create_v_tunnel(prev_y, new_y, new_x)
-                else:
-                    #first move vertically, then horizontally
-                    create_v_tunnel(prev_y, new_y, prev_x)
-                    create_h_tunnel(prev_x, new_x, new_y)
-				 */
-				createRoom(map,rooms.get(numRooms));
 			}
-	
+			roomNum++;
+			
+		}
+		
+		int labelCount = 0;
+		byte name = (byte) 'a';
+		for (Rect room:rooms){
+			Point center = center(room);
+			if (labelCount ==0) {
+				map[center.y][center.x] = (byte) '@';	
+			} else {
+				map[center.y][center.x] = name;
+			}
+			name++;
+			labelCount++;
 		}
 		
 				   
