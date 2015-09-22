@@ -18,14 +18,14 @@ import javax.swing.JTextArea;
 public class DrawMap extends JPanel  implements KeyListener{
 		static JTextArea displayArea;
 		static JFrame f;
-		static int fontSize = 50;
+		static int fontSize = 10;
 		int mapHeight;
 		int mapWidth;
         //Location of your map, you'll need other methods to change this value to move your map around on the screen. But this will start your generation at 0,0 NOTE: Since you are dealing with ASCII you will probably be fine just using ints instead of floats.
          float mapX;
          float mapY;
-         int displayWidth =640; //Screen size width.
-        int displayHeight = 480; //Screen size height.
+         int displayWidth =1024; //Screen size width.
+        int displayHeight = 768; //Screen size height.
         private byte[][] yourMap = new byte[mapHeight][mapWidth]; //Create byte array matching map height/width. (May need to be an int[][] or whatever[][] depending on what you're doing)
         
         private int getRandom(int min, int max) {
@@ -43,6 +43,14 @@ public class DrawMap extends JPanel  implements KeyListener{
         	mapY = 0 + getSpacing();
         	mapX = 0;
         }
+        
+        public DrawMap(int height, int width) {
+        	mapHeight = height;
+        	mapWidth = width;
+        	this.yourMap =  MapGenCaves.newBlankMap(height,width);
+        	mapY = 0 + getSpacing();
+        	mapX = 0;
+        }
        
         public void paint(Graphics g) {
         	
@@ -55,7 +63,7 @@ public class DrawMap extends JPanel  implements KeyListener{
                                 RenderingHints.VALUE_ANTIALIAS_ON);
                // Font font = new Font(Font.MONOSPACED,Font.PLAIN, fontSize);
                 Font font = new Font(Font.MONOSPACED,Font.PLAIN,fontSize);
-                //Font font = Font.createFont(Font.PLAIN, fontFile)
+               // Font font = Font.createFont(Font.PLAIN, fontFile)
                 g2.setFont(font);            
                 final int spacing = getSpacing();
 
@@ -71,8 +79,9 @@ public class DrawMap extends JPanel  implements KeyListener{
                                               
                                         	
                                         		final char ch = (char)yourMap[y][x];
-                                        		final int col = getRandom(1,3);   
-                                        		g2.setColor(col ==1 ? Color.red : Color.green);
+                                        		//final int col = getRandom(1,3);   
+                                        		//g2.setColor(col ==1 ? Color.red : Color.green);
+                                        		g2.setColor(Color.gray);
                                                 g2.drawString(String.valueOf(ch), (x*spacing)+mapX, (y*spacing)+mapY); 
                                                 //So basically, however you call it, the coords would be (x*spacing)+mapX, (y*spacing)+mapY and you'll be calling character yourMap[x][y]. 
                                      //   }
@@ -87,7 +96,8 @@ public class DrawMap extends JPanel  implements KeyListener{
                 f.getContentPane().setBackground(Color.black);
                 f.pack();
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                DrawMap map = new DrawMap("/home/matt/workspace/drawstring/src/map.txt");
+               // DrawMap map = new DrawMap("/home/matt/workspace/drawstring/src/map.txt");
+                DrawMap map = new DrawMap(200,200);
                 f.getContentPane().add(map);
                 
                 displayArea = new JTextArea();
@@ -98,8 +108,10 @@ public class DrawMap extends JPanel  implements KeyListener{
                 displayArea.setFont(new Font(Font.MONOSPACED,Font.PLAIN, 20));
                 displayArea.setText("hello");
                 
-                f.setSize(640, 480);
-                f.setPreferredSize(new Dimension(640, 480));                           
+                map.yourMap = MapGenCaves.generateGrid(map.yourMap);
+                
+                f.setSize(1024, 480);
+                f.setPreferredSize(new Dimension(1024, 480));                           
                 f.setVisible(true);
                 displayArea.addKeyListener(map);
         }
@@ -133,6 +145,12 @@ public class DrawMap extends JPanel  implements KeyListener{
 				mapX = 0;
 				mapY=0;
 			}
+			if (key.getKeyCode() == KeyEvent.VK_SPACE) {
+				this.yourMap = MapGenCaves.evolveGrid(this.yourMap);
+	        }
+			if (key.getKeyCode() == KeyEvent.VK_3) {
+				this.yourMap = MapGenCaves.generateGrid(this.yourMap);
+	        }
 			f.repaint();
 			displayArea.setText("X:" +String.valueOf(mapX/spacing) + "-Y:" + String.valueOf(mapY/spacing));
 		}
