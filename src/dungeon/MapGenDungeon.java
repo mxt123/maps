@@ -29,7 +29,7 @@ public class MapGenDungeon {
 	
 	public static void createHTunnel(byte[][] map, int x1, int x2, int y)
 	{
-		for (int x = Math.min(x1,x2); x < Math.max(x1, x2); x++){
+		for (int x = Math.min(x1,x2); x < Math.max(x1, x2) +1; x++){
 			 map[y][x] = (byte) SPACE;
 		}
 	}
