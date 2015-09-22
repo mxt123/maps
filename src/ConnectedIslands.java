@@ -5,8 +5,8 @@ import java.util.List;
 // http://www.geeksforgeeks.org/find-number-of-islands/
 public class ConnectedIslands {
 	
-	static char LAND = '#';
-	static byte LAND_B = (byte) LAND;
+	static char LAND = '_';
+	static byte L = (byte) LAND;
 
 	// A function to check if a given cell (row, col) can be included in DFS
 	private static boolean isSafe(byte M[][], int row, int col, boolean [][] visited)
@@ -44,10 +44,10 @@ public class ConnectedIslands {
 	 
 	    // Initialize count as 0 and traverse through the all cells of
 	    // given matrix
-	    int count = 0;
+	   // int count = 0;
 	    for (int i = 0; i < M.length; ++i)
 	        for (int j = 0; j < M[0].length; ++j)
-	            if (M[i][j] == LAND_B && !visited[i][j]) // If a cell with value 1 is not
+	            if (M[i][j] == L && !visited[i][j]) // If a cell with value 1 is not
 	            {                              // visited yet, then new island found
 	                DFS(M, i, j, visited);     // Visit all cells in this island.
 	                //++count;                   // and increment island count
@@ -61,11 +61,11 @@ public class ConnectedIslands {
 	public static void  main(String[] args)
 	{
 	    byte M[][]= {  
-	    		{LAND_B, LAND_B, 0, 0, 0},
-	    		{0, LAND_B, 0, 0, LAND_B},
-	    		{LAND_B, 0, 0, LAND_B, LAND_B},
+	    		{L, L, 0, 0, 0},
+	    		{0, L, 0, 0, L},
+	    		{L, 0, 0, L, L},
 	    		{0, 0, 0, 0, 0},
-	    		{LAND_B, 0, LAND_B, 0, LAND_B}
+	    		{L, 0, L, 0, L}
 	    };
 	 
 	    System.out.println("Number of islands is: " + countIslands(M).size());

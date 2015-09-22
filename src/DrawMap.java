@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -27,7 +28,7 @@ public class DrawMap extends JPanel  implements KeyListener{
          int displayWidth =1024; //Screen size width.
         int displayHeight = 768; //Screen size height.
         private byte[][] yourMap = new byte[mapHeight][mapWidth]; //Create byte array matching map height/width. (May need to be an int[][] or whatever[][] depending on what you're doing)
-        
+        private List<Message> messages = new ArrayList<Message>();
         
         
         private int getRandom(int min, int max) {
@@ -88,9 +89,19 @@ public class DrawMap extends JPanel  implements KeyListener{
                                         		g2.drawString(String.valueOf(ch), (x*spacing)+mapX, (y*spacing)+mapY); 
                                                 //So basically, however you call it, the coords would be (x*spacing)+mapX, (y*spacing)+mapY and you'll be calling character yourMap[x][y]. 
                                      //   }
+                                     
                                 }
                         }
                 }
+                
+                // draw message layer
+                g2.setColor(Color.yellow);
+                for (Message m: messages) {          
+                	
+            		g2.drawString(m.message, (m.p.y * fontSize)+mapY,(m.p.x*fontSize)+mapX); 
+
+                }
+                
         }
 
 
@@ -158,8 +169,9 @@ public class DrawMap extends JPanel  implements KeyListener{
 			if (key.getKeyCode() == KeyEvent.VK_4) {
 				List<Point> islands = ConnectedIslands.countIslands(yourMap);
 				System.out.println("Number of islands is: " + islands.size());
+				this.messages = new ArrayList<Message>();
 				for (Point p: islands) {
-					
+					messages.add(new Message(p, "Island"));
 				}
 	        }
 			
