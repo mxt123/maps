@@ -8,12 +8,12 @@ import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
 
 public class DrawMap extends JPanel  implements KeyListener{
 		static JTextArea displayArea;
@@ -27,6 +27,8 @@ public class DrawMap extends JPanel  implements KeyListener{
          int displayWidth =1024; //Screen size width.
         int displayHeight = 768; //Screen size height.
         private byte[][] yourMap = new byte[mapHeight][mapWidth]; //Create byte array matching map height/width. (May need to be an int[][] or whatever[][] depending on what you're doing)
+        
+        
         
         private int getRandom(int min, int max) {
         	return min + (int)(Math.random() * ((max - min) + 1));	
@@ -71,7 +73,7 @@ public class DrawMap extends JPanel  implements KeyListener{
                 //Start looping through the entire byte array.
                 for (int x = 0; x < mapWidth; x++) {
                         for (int y = 0; y < mapHeight; y++) {
-                        	  System.out.println(x + "," + y + "," + (char)yourMap[y][x]);
+                        	//  System.out.println(x + "," + y + "," + (char)yourMap[y][x]);
                                 // Check to see if the coordinates being looked for are visible on the screen. If not, don't bother rendering them.
                                 if ((x*spacing+mapX > -10) && (x*spacing+mapX < displayWidth+10) && (y*getSpacing()+mapY > -10) && (y*spacing+mapY < displayHeight+10)){
                                        // if (!(yourMap[x][y] == 0)){ //Assuming 0 is a "blank space", but whatever == Blank space here, so you're not trying to output nothing.
@@ -81,8 +83,9 @@ public class DrawMap extends JPanel  implements KeyListener{
                                         		final char ch = (char)yourMap[y][x];
                                         		//final int col = getRandom(1,3);   
                                         		//g2.setColor(col ==1 ? Color.red : Color.green);
-                                        		g2.setColor(Color.gray);
-                                                g2.drawString(String.valueOf(ch), (x*spacing)+mapX, (y*spacing)+mapY); 
+                                        	//	g2.setColor(ch == MapGenCaves.TREE?Color.GREEN :Color.gray);
+                                        		g2.setColor(ch == MapGenCaves.WALL?Color.BLUE :Color.GREEN);
+                                        		g2.drawString(String.valueOf(ch), (x*spacing)+mapX, (y*spacing)+mapY); 
                                                 //So basically, however you call it, the coords would be (x*spacing)+mapX, (y*spacing)+mapY and you'll be calling character yourMap[x][y]. 
                                      //   }
                                 }
@@ -97,7 +100,8 @@ public class DrawMap extends JPanel  implements KeyListener{
                 f.pack();
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                // DrawMap map = new DrawMap("/home/matt/workspace/drawstring/src/map.txt");
-                DrawMap map = new DrawMap(200,200);
+                // TODO change recursive graph functions to avoid stackoverflows :)
+                DrawMap map = new DrawMap(100,100);
                 f.getContentPane().add(map);
                 
                 displayArea = new JTextArea();
@@ -136,12 +140,12 @@ public class DrawMap extends JPanel  implements KeyListener{
 				}
 			}
 			if (key.getKeyCode() == KeyEvent.VK_1) {
-				fontSize += 10;	
+				fontSize += 1;	
 				mapX = 0;
 				mapY=0;
 			}
 			if (key.getKeyCode() == KeyEvent.VK_2) {
-				fontSize -= 10;
+				fontSize -= 1;
 				mapX = 0;
 				mapY=0;
 			}
@@ -151,8 +155,17 @@ public class DrawMap extends JPanel  implements KeyListener{
 			if (key.getKeyCode() == KeyEvent.VK_3) {
 				this.yourMap = MapGenCaves.generateGrid(this.yourMap);
 	        }
+			if (key.getKeyCode() == KeyEvent.VK_4) {
+				List<Point> islands = ConnectedIslands.countIslands(yourMap);
+				System.out.println("Number of islands is: " + islands.size());
+				for (Point p: islands) {
+					
+				}
+	        }
+			
 			f.repaint();
 			displayArea.setText("X:" +String.valueOf(mapX/spacing) + "-Y:" + String.valueOf(mapY/spacing));
+			
 		}
 
 		@Override

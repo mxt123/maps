@@ -1,9 +1,11 @@
 
 public class MapGenCaves {
 	
+	static char TREE = 'T';
 	static char WALL = '#';
-	static char SPACE = ' ';
+	static char SPACE = '_';
 	static double CHANCETOSTARTALIVE = 0.45;
+	static double CHANCETREE = 0.3;
 	
 	public static int countAliveNeighbours(byte[][] grid,int x, int y)
 	{
@@ -30,24 +32,25 @@ public class MapGenCaves {
 		  for (int y = 0; y < grid.length ; y++) {
 		    for (int x = 0; x < grid[0].length ; x++) {    
 		      int count = countAliveNeighbours(grid,x,y);
-		      boolean isAlive = ((char)grid[y][x]) == WALL;
-		      if (isAlive) {
-		        if ( count < 3) {
-		          newgrid[y][x] = (byte) SPACE;
-		        } 
-		        else {
-		          newgrid[y][x] = (byte) WALL;
-		        } 
-		      }
-		       else if (!isAlive) {
-		        if (count > 4 ){
-		          newgrid[y][x] = (byte) WALL;
-		        } else {
-		          newgrid[y][x] = (byte) SPACE;
-		        }
-		      }
-
-		    }
+		     // if (!((char)grid[y][x]== TREE) ) {
+			      boolean isAlive = ((char)grid[y][x]) == WALL;
+			      if (isAlive) {
+			        if ( count < 3) {
+			          newgrid[y][x] = (byte) SPACE;
+			        } 
+			        else {
+			          newgrid[y][x] = (byte) WALL;
+			        } 
+			      }
+			       else if (!isAlive) {
+			        if (count > 4 ){
+			          newgrid[y][x] = (byte) WALL;
+			        } else {
+			          newgrid[y][x] = (byte) SPACE;
+			        }
+			      }
+		      	}
+		    //}
 		  }
 		  grid = newgrid;
 		  newgrid=null;
@@ -59,7 +62,10 @@ public class MapGenCaves {
 	    for (int x = 0; x < grid[0].length ; x++) {    
 	        if (  Math.random() < CHANCETOSTARTALIVE) {
 	          grid[y][x] = (byte) WALL;
-	        } else {
+	       // } else if(Math.random() < CHANCETREE) {
+	        //	grid[y][x] = (byte) TREE;
+	        }
+	        else {
 	          grid[y][x] = (byte) SPACE;  
 	        }
 	      }
