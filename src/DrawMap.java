@@ -24,7 +24,7 @@ import dungeon.MapGenDungeon;
 public class DrawMap extends JPanel  implements KeyListener{
 		static JTextArea displayArea;
 		static JFrame f;
-		static int fontSize = 10;
+		static int fontSize = 14;
 		int mapHeight;
 		int mapWidth;
         //Location of your map, you'll need other methods to change this value to move your map around on the screen. But this will start your generation at 0,0 NOTE: Since you are dealing with ASCII you will probably be fine just using ints instead of floats.
@@ -117,7 +117,7 @@ public class DrawMap extends JPanel  implements KeyListener{
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                // DrawMap map = new DrawMap("/home/matt/workspace/drawstring/src/map.txt");
                 // TODO change recursive graph functions to avoid stackoverflows :)
-                DrawMap map = new DrawMap(50,100);
+                DrawMap map = new DrawMap(50,50);
                 f.getContentPane().add(map);
                 
                 displayArea = new JTextArea();
@@ -130,8 +130,8 @@ public class DrawMap extends JPanel  implements KeyListener{
                 
                 map.yourMap = MapGenCaves.generateGrid(map.yourMap);
                 
-                f.setSize(1024, 480);
-                f.setPreferredSize(new Dimension(1024, 480));                           
+                f.setSize(1024, 768);
+                f.setPreferredSize(new Dimension(1024, 768));                           
                 f.setVisible(true);
                 displayArea.addKeyListener(map);
         }
